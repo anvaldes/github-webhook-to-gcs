@@ -1,7 +1,7 @@
 import os
 import hmac
 import hashlib
-from datetime import date
+from datetime import datetime, timezone
 from flask import Flask, request
 from google.cloud import storage
 
@@ -26,7 +26,12 @@ def receive_event():
 
 
 def upload_to_gcs(body, event, delivery_id):
-    path = f"raw/github/{event}/dt={date.today()}/{delivery_id}.json"
+    now = datetime.now(timezone.utc)
+    path = (
+        f"raw/github/{event}/"
+        f"year={now:%Y}/month={now:%m}/day={now:%d}/hour={now:%H}/minute={now:%M}/"
+        f"{delivery_id}.json"
+    )
     blob = storage.Client().bucket(BUCKET).blob(path)
     blob.upload_from_string(body, content_type="application/json")
     return path
