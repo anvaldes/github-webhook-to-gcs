@@ -53,4 +53,5 @@ jobs:
             --region="$REGION" \
             --project="$PROJECT_ID" \
             --service-account="$SERVICE_ACCOUNT" \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --set-secrets=GITHUB_WEBHOOK_SECRET=github-webhook-secret:latest
