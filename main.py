@@ -12,18 +12,15 @@ print("✔ Flask app is loading...")
 BUCKET = "webhook-to-gcs"
 SECRET = os.environ.get("GITHUB_WEBHOOK_SECRET", "")
 
-
 def verify_signature(body, signature):
     expected = "sha256=" + hmac.new(SECRET.encode(), body, hashlib.sha256).hexdigest()
     return SECRET != "" and hmac.compare_digest(expected, signature or "")
-
 
 def receive_event():
     body = request.get_data()
     event = request.headers.get("X-GitHub-Event", "unknown")
     delivery_id = request.headers.get("X-GitHub-Delivery", "no-id")
     return body, event, delivery_id
-
 
 def upload_to_gcs(body, event, delivery_id):
     now = datetime.now(timezone.utc)
@@ -35,7 +32,6 @@ def upload_to_gcs(body, event, delivery_id):
     blob = storage.Client().bucket(BUCKET).blob(path)
     blob.upload_from_string(body, content_type="application/json")
     return path
-
 
 @app.route("/", methods=["POST"])
 def pipeline():
